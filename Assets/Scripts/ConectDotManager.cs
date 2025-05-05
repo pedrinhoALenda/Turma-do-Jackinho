@@ -1,45 +1,161 @@
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
-public class Dot : MonoBehaviour
+public class ConnectDotsDrawer : MonoBehaviour
 {
-    public int pointNumber; // Número do ponto (ordem)
-}
+    public LayerMask dotLayer;
+    public float minDistance = 0.1f;
+    public GameObject linePrefab;
+    public List<Collider2D> validZones; // Lista atribuÃ­da no Inspector
 
-public class ConnectDotsManager : MonoBehaviour
-{
-    public int currentPoint = 1; // Começa do ponto 1
+    public int currentPoint = 1;
+
+    private List<GameObject> permanentLines = new List<GameObject>();
+    private LineRenderer tempLineRenderer;
+    private List<Vector3> tempPoints = new List<Vector3>();
+    private bool isDrawing = false;
+    private bool validConnection = false;
+    private Camera cam;
+
+    private Collider2D currentZone;
+
+    void Start()
+    {
+        cam = Camera.main;
+        DeactivateAllZones();
+    }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // ou usar Touch para mobile
-        {
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
+        Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 10f, dotLayer);
             if (hit.collider != null)
             {
                 Dot dot = hit.collider.GetComponent<Dot>();
-                if (dot != null)
+                if (dot != null && dot.pointNumber == currentPoint)
                 {
-                    if (dot.pointNumber == currentPoint)
-                    {
-                        Debug.Log("Correto!");
-                        currentPoint++;
-
-                        // Aqui você pode checar se todos os pontos já foram tocados
-                    }
-                    else
-                    {
-                        Debug.Log("Tocou o ponto errado! Game Over.");
-                        // Aqui chama derrota
-                    }
-                }
-                else if (hit.collider.CompareTag("FailArea"))
-                {
-                    Debug.Log("Tocou na área errada! Game Over.");
-                    // Aqui chama derrota
+                    StartDrawing(dot.transform.position);
+                    ActivateZoneForCurrentPair();
                 }
             }
         }
+
+        if (Input.GetMouseButton(0) && isDrawing)
+        {
+            if (IsInsideValidZone(mousePos))
+            {
+                ContinueDrawing(mousePos);
+
+                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 10f, dotLayer);
+                if (hit.collider != null)
+                {
+                    Dot dot = hit.collider.GetComponent<Dot>();
+                    if (dot != null && dot.pointNumber == currentPoint + 1)
+                    {
+                        validConnection = true;
+                        FinalizeLine(dot.transform.position);
+                        currentPoint++;
+                        DeactivateAllZones();
+                    }
+                }
+            }
+            else
+            {
+                CancelTemporaryLine(); // linha fora da zona vÃ¡lida
+                DeactivateAllZones();
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (!validConnection)
+            {
+                CancelTemporaryLine();
+                DeactivateAllZones();
+            }
+
+            isDrawing = false;
+            validConnection = false;
+        }
+    }
+
+    void StartDrawing(Vector3 startPoint)
+    {
+        isDrawing = true;
+        validConnection = false;
+        tempPoints.Clear();
+
+        GameObject tempLine = Instantiate(linePrefab);
+        tempLineRenderer = tempLine.GetComponent<LineRenderer>();
+        tempPoints.Add(startPoint);
+        UpdateTempLine();
+    }
+
+    void ContinueDrawing(Vector3 newPoint)
+    {
+        if (tempPoints.Count == 0 || Vector3.Distance(tempPoints[tempPoints.Count - 1], newPoint) > minDistance)
+        {
+            tempPoints.Add(newPoint);
+            UpdateTempLine();
+        }
+    }
+
+    void UpdateTempLine()
+    {
+        tempLineRenderer.positionCount = tempPoints.Count;
+        tempLineRenderer.SetPositions(tempPoints.ToArray());
+    }
+
+    void FinalizeLine(Vector3 endPoint)
+    {
+        tempPoints.Add(endPoint);
+        UpdateTempLine();
+
+        permanentLines.Add(tempLineRenderer.gameObject);
+        tempLineRenderer = null;
+        tempPoints.Clear();
+        isDrawing = false;
+    }
+
+    void CancelTemporaryLine()
+    {
+        if (tempLineRenderer != null)
+        {
+            Destroy(tempLineRenderer.gameObject);
+            tempLineRenderer = null;
+            tempPoints.Clear();
+        }
+
+        isDrawing = false;
+    }
+
+    void ActivateZoneForCurrentPair()
+    {
+        if (currentPoint - 1 < validZones.Count)
+        {
+            currentZone = validZones[currentPoint - 1];
+            if (currentZone != null)
+                currentZone.gameObject.SetActive(true);
+        }
+    }
+
+    void DeactivateAllZones()
+    {
+        foreach (Collider2D col in validZones)
+        {
+            if (col != null)
+                col.gameObject.SetActive(false);
+        }
+
+        currentZone = null;
+    }
+
+    bool IsInsideValidZone(Vector2 position)
+    {
+        if (currentZone == null) return false;
+        return currentZone.OverlapPoint(position);
     }
 }
