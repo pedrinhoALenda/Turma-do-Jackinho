@@ -5,15 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 4f5a713af32ca294ead3626643c17679
   - enabled: 1
     path: Assets/Scenes/Gameplay.unity
     guid: ebcedf2a8e4ae78408a1e3888a883e7b
+  - enabled: 1
+    path: "Assets/Scenes/TelaVit\xF3ria.unity"
+    guid: 8c9cfa26abfee488c85f1582747f6a02
   m_configObjects:
+    com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: ae1bcb864c8f69343b7f2a8e5bca90a1, type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 04bb371d11fa6c947873e5854b907aed, type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 0662478f119f75e419fc7428ce99c412, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

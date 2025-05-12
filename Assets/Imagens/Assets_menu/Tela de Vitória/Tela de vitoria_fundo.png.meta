@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Tela de vitoria_fundo_0: -7371131302385541870
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

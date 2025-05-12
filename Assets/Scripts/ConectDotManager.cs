@@ -1,135 +1,176 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ConnectDotsDrawer : MonoBehaviour
 {
     public LayerMask dotLayer;
     public float minDistance = 0.1f;
     public GameObject linePrefab;
-    public List<Collider2D> validZones; // Lista atribuída no Inspector
-
+    public List<Collider2D> validZones;
     public int currentPoint = 1;
+    public string nextSceneName;
+    public int lineSortingOrder = 10;
+    public Color[] lineColors;
+    public float autoCompleteSpeed = 5f;
+    public float errorMargin = 0.5f;
 
     private List<GameObject> permanentLines = new List<GameObject>();
-    private LineRenderer tempLineRenderer;
-    private List<Vector3> tempPoints = new List<Vector3>();
+    private LineRenderer currentLineRenderer;
+    private List<Vector3> currentLinePoints = new List<Vector3>();
     private bool isDrawing = false;
-    private bool validConnection = false;
     private Camera cam;
-
     private Collider2D currentZone;
+    private bool isAutoCompleting = false;
+    private Vector3 lastValidPosition;
+    private Dot currentDot;
+    private Dot nextDot;
+    private Vector3 targetPosition; // Renomeado de autoCompleteTarget para targetPosition
 
     void Start()
     {
         cam = Camera.main;
         DeactivateAllZones();
+        currentDot = FindDotByNumber(currentPoint);
     }
 
     void Update()
     {
         Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
+        if (isAutoCompleting)
+        {
+            AutoCompleteLine();
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 10f, dotLayer);
-            if (hit.collider != null)
+            if (hit.collider != null && hit.collider.GetComponent<Dot>()?.pointNumber == currentPoint)
             {
-                Dot dot = hit.collider.GetComponent<Dot>();
-                if (dot != null && dot.pointNumber == currentPoint)
-                {
-                    StartDrawing(dot.transform.position);
-                    ActivateZoneForCurrentPair();
-                }
+                StartNewLine(currentDot.transform.position);
+                ActivateZoneForCurrentPair();
+                lastValidPosition = currentDot.transform.position;
             }
         }
 
         if (Input.GetMouseButton(0) && isDrawing)
         {
-            if (IsInsideValidZone(mousePos))
+            if (IsInsideValidZone(mousePos) || Vector3.Distance(mousePos, lastValidPosition) < errorMargin)
             {
-                ContinueDrawing(mousePos);
+                ContinueLine(mousePos);
+                lastValidPosition = mousePos;
 
-                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 10f, dotLayer);
-                if (hit.collider != null)
+                if (nextDot != null && Vector3.Distance(mousePos, nextDot.transform.position) < errorMargin)
                 {
-                    Dot dot = hit.collider.GetComponent<Dot>();
-                    if (dot != null && dot.pointNumber == currentPoint + 1)
-                    {
-                        validConnection = true;
-                        FinalizeLine(dot.transform.position);
-                        currentPoint++;
-                        DeactivateAllZones();
-                    }
+                    StartAutoComplete(nextDot.transform.position);
                 }
             }
             else
             {
-                CancelTemporaryLine(); // linha fora da zona válida
-                DeactivateAllZones();
+                ContinueLine(lastValidPosition);
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && isDrawing)
         {
-            if (!validConnection)
+            if (nextDot == null || Vector3.Distance(currentLinePoints[currentLinePoints.Count - 1], nextDot.transform.position) > errorMargin)
             {
-                CancelTemporaryLine();
-                DeactivateAllZones();
+                isDrawing = false;
+                return;
             }
-
-            isDrawing = false;
-            validConnection = false;
+            StartAutoComplete(nextDot.transform.position);
         }
     }
 
-    void StartDrawing(Vector3 startPoint)
+    void StartNewLine(Vector3 startPoint)
     {
         isDrawing = true;
-        validConnection = false;
-        tempPoints.Clear();
+        currentLinePoints.Clear();
 
-        GameObject tempLine = Instantiate(linePrefab);
-        tempLineRenderer = tempLine.GetComponent<LineRenderer>();
-        tempPoints.Add(startPoint);
-        UpdateTempLine();
+        GameObject lineObj = Instantiate(linePrefab);
+        currentLineRenderer = lineObj.GetComponent<LineRenderer>();
+        currentLineRenderer.sortingOrder = lineSortingOrder;
+
+        if (lineColors.Length > 0)
+        {
+            int colorIndex = (currentPoint - 1) % lineColors.Length;
+            currentLineRenderer.startColor = lineColors[colorIndex];
+            currentLineRenderer.endColor = lineColors[colorIndex];
+        }
+
+        currentLinePoints.Add(startPoint);
+        UpdateCurrentLine();
     }
 
-    void ContinueDrawing(Vector3 newPoint)
+    void ContinueLine(Vector3 newPoint)
     {
-        if (tempPoints.Count == 0 || Vector3.Distance(tempPoints[tempPoints.Count - 1], newPoint) > minDistance)
+        if (currentLinePoints.Count == 0 || Vector3.Distance(currentLinePoints[currentLinePoints.Count - 1], newPoint) > minDistance)
         {
-            tempPoints.Add(newPoint);
-            UpdateTempLine();
+            currentLinePoints.Add(newPoint);
+            UpdateCurrentLine();
         }
     }
 
-    void UpdateTempLine()
+    void UpdateCurrentLine()
     {
-        tempLineRenderer.positionCount = tempPoints.Count;
-        tempLineRenderer.SetPositions(tempPoints.ToArray());
+        currentLineRenderer.positionCount = currentLinePoints.Count;
+        currentLineRenderer.SetPositions(currentLinePoints.ToArray());
     }
 
-    void FinalizeLine(Vector3 endPoint)
+    void StartAutoComplete(Vector3 target)
     {
-        tempPoints.Add(endPoint);
-        UpdateTempLine();
-
-        permanentLines.Add(tempLineRenderer.gameObject);
-        tempLineRenderer = null;
-        tempPoints.Clear();
+        isAutoCompleting = true;
         isDrawing = false;
+        targetPosition = target; // Usando a variável renomeada
     }
 
-    void CancelTemporaryLine()
+    void AutoCompleteLine()
     {
-        if (tempLineRenderer != null)
+        Vector3 lastPoint = currentLinePoints[currentLinePoints.Count - 1];
+        Vector3 newPos = Vector3.MoveTowards(lastPoint, targetPosition, autoCompleteSpeed * Time.deltaTime);
+
+        ContinueLine(newPos);
+
+        if (Vector3.Distance(newPos, targetPosition) < 0.01f)
         {
-            Destroy(tempLineRenderer.gameObject);
-            tempLineRenderer = null;
-            tempPoints.Clear();
+            CompleteCurrentLine();
         }
+    }
 
-        isDrawing = false;
+    void CompleteCurrentLine()
+    {
+        isAutoCompleting = false;
+        permanentLines.Add(currentLineRenderer.gameObject);
+
+        currentPoint++;
+        currentDot = nextDot;
+        nextDot = FindDotByNumber(currentPoint + 1);
+
+        DeactivateAllZones();
+
+        if (currentPoint >= validZones.Count + 1)
+        {
+            LoadNextScene();
+        }
+        else
+        {
+            StartNewLine(currentDot.transform.position);
+            ActivateZoneForCurrentPair();
+            lastValidPosition = currentDot.transform.position;
+        }
+    }
+
+    Dot FindDotByNumber(int pointNumber)
+    {
+        Dot[] allDots = FindObjectsOfType<Dot>();
+        foreach (var dot in allDots)
+        {
+            if (dot.pointNumber == pointNumber)
+                return dot;
+        }
+        return null;
     }
 
     void ActivateZoneForCurrentPair()
@@ -138,7 +179,10 @@ public class ConnectDotsDrawer : MonoBehaviour
         {
             currentZone = validZones[currentPoint - 1];
             if (currentZone != null)
+            {
                 currentZone.gameObject.SetActive(true);
+                nextDot = FindDotByNumber(currentPoint + 1);
+            }
         }
     }
 
@@ -149,7 +193,6 @@ public class ConnectDotsDrawer : MonoBehaviour
             if (col != null)
                 col.gameObject.SetActive(false);
         }
-
         currentZone = null;
     }
 
@@ -157,5 +200,17 @@ public class ConnectDotsDrawer : MonoBehaviour
     {
         if (currentZone == null) return false;
         return currentZone.OverlapPoint(position);
+    }
+
+    void LoadNextScene()
+    {
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Next scene name not set in the inspector.");
+        }
     }
 }
