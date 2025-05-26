@@ -4,39 +4,55 @@ using UnityEngine.SceneManagement;
 
 public class ConnectDotsDrawer : MonoBehaviour
 {
+    [Header("Audio")]
+    public AudioSource chalkAudioSource;
+
+    [Header("Dots & Zones")]
     public LayerMask dotLayer;
+    public List<Collider2D> validZones;
+
+    [Header("Line Settings")]
     public float minDistance = 0.1f;
     public GameObject linePrefab;
-    public List<Collider2D> validZones;
-    public int currentPoint = 1;
-    public string nextSceneName;
     public int lineSortingOrder = 10;
     public Color[] lineColors;
     public float autoCompleteSpeed = 5f;
     public float errorMargin = 0.5f;
 
+    [Header("Game Flow")]
+    public int currentPoint = 1;
+    public string nextSceneName;
+
     private List<GameObject> permanentLines = new List<GameObject>();
     private LineRenderer currentLineRenderer;
     private List<Vector3> currentLinePoints = new List<Vector3>();
     private bool isDrawing = false;
+    private bool isAutoCompleting = false;
+
     private Camera cam;
     private Collider2D currentZone;
-    private bool isAutoCompleting = false;
     private Vector3 lastValidPosition;
+    private Vector3 targetPosition;
     private Dot currentDot;
     private Dot nextDot;
-    private Vector3 targetPosition; // Renomeado de autoCompleteTarget para targetPosition
 
     void Start()
     {
         cam = Camera.main;
         DeactivateAllZones();
         currentDot = FindDotByNumber(currentPoint);
+        ActivateZoneForCurrentPair();
     }
 
     void Update()
     {
         Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+
+        // Tocar som de giz sempre que tocar na tela
+        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        {
+            PlayChalkSound();
+        }
 
         if (isAutoCompleting)
         {
@@ -50,7 +66,6 @@ public class ConnectDotsDrawer : MonoBehaviour
             if (hit.collider != null && hit.collider.GetComponent<Dot>()?.pointNumber == currentPoint)
             {
                 StartNewLine(currentDot.transform.position);
-                ActivateZoneForCurrentPair();
                 lastValidPosition = currentDot.transform.position;
             }
         }
@@ -123,7 +138,7 @@ public class ConnectDotsDrawer : MonoBehaviour
     {
         isAutoCompleting = true;
         isDrawing = false;
-        targetPosition = target; // Usando a variável renomeada
+        targetPosition = target;
     }
 
     void AutoCompleteLine()
@@ -144,20 +159,22 @@ public class ConnectDotsDrawer : MonoBehaviour
         isAutoCompleting = false;
         permanentLines.Add(currentLineRenderer.gameObject);
 
+        // Desativar zona atual
+        if (currentZone != null)
+            currentZone.gameObject.SetActive(false);
+
         currentPoint++;
         currentDot = nextDot;
         nextDot = FindDotByNumber(currentPoint + 1);
 
-        DeactivateAllZones();
-
-        if (currentPoint >= validZones.Count + 1)
+        if (currentPoint > validZones.Count)
         {
             LoadNextScene();
         }
         else
         {
-            StartNewLine(currentDot.transform.position);
             ActivateZoneForCurrentPair();
+            StartNewLine(currentDot.transform.position);
             lastValidPosition = currentDot.transform.position;
         }
     }
@@ -211,6 +228,14 @@ public class ConnectDotsDrawer : MonoBehaviour
         else
         {
             Debug.LogWarning("Next scene name not set in the inspector.");
+        }
+    }
+
+    void PlayChalkSound()
+    {
+        if (chalkAudioSource != null && !chalkAudioSource.isPlaying)
+        {
+            chalkAudioSource.Play();
         }
     }
 }
