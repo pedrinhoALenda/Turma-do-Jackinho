@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      minigame2- indicador do termometro_0: 7849969870036802761
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -311,7 +311,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "minigame2- Bot\xE3o de respirar_0": -5118930252055087910
+      "minigame2- Bot\xE3o de respirar_1": 7732661438479613934
+      "minigame2- Bot\xE3o de respirar_2": 7001073630456900777
+      "minigame2- Bot\xE3o de respirar_3": -8061465301921457496
+      "minigame2- Bot\xE3o de respirar_4": -4500559121437718247
+      "minigame2- Bot\xE3o de respirar_5": -3411743570929761189
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

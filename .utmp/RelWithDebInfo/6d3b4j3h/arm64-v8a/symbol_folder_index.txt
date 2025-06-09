@@ -1,0 +1,1 @@
+D:\unity\projetos\Turma-do-Jackinho\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\6d3b4j3h\obj\arm64-v8a

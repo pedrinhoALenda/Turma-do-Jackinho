@@ -236,7 +236,10 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      minigame 2Termometro_0: -7605214627487936395
+      minigame 2Termometro_1: 2188673203284211823
+      minigame 2Termometro_2: -7810776252075217824
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

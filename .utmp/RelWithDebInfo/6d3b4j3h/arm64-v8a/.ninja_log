@@ -1,0 +1,12 @@
+# ninja log v5
+57	1060	7711629625693651	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	aeb640cf4fa7057d
+1063	1481	7711629629472795	D:/unity/projetos/Turma-do-Jackinho/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6d3b4j3h/obj/arm64-v8a/libswappywrapper.so	5a91ffa8c463483e
+2	3079	7711629645813322	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	9473954acc73eb0
+19	3117	7711629646159604	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	d816d53714ce6e15
+31	3206	7711629647065719	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	1dcba4dba4f27f62
+39	3272	7711629647575583	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	8232665630a1337d
+47	3295	7711629647825498	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	cb21161729f9ab71
+9	3513	7711629650145228	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	5fc632e549c4960d
+25	3612	7711629651117285	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	738833d257deae5e
+14	3814	7711629653121782	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	ddc101c38939290e
+3815	4074	7711629655667544	D:/unity/projetos/Turma-do-Jackinho/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6d3b4j3h/obj/arm64-v8a/libgame.so	fe43aff3f307e6ae

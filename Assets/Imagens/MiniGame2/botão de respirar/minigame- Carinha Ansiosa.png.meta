@@ -211,7 +211,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      minigame- Carinha Ansiosa_0: -2294720086317904915
+      minigame- Carinha Ansiosa_1: 8337118105091167889
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

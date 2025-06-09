@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      tema_miniGame_Oncologia_ desbloqueado_0: 3210133398730356985
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

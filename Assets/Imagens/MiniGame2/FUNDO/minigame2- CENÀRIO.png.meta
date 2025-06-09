@@ -211,7 +211,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "minigame2- CEN\xC0RIO_0": 7422720966686779726
+      "minigame2- CEN\xC0RIO_1": 3672497117336130824
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

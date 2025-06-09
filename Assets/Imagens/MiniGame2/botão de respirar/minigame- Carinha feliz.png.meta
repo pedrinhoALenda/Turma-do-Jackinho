@@ -261,7 +261,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      minigame- Carinha feliz_0: -5993745665093383577
+      minigame- Carinha feliz_1: -8592389463600433404
+      minigame- Carinha feliz_2: 8110009864371295316
+      minigame- Carinha feliz_3: -7582727895955994920
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
