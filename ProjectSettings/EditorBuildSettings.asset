@@ -14,6 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/Scenes/TelaVit\xF3ria.unity"
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Carro.unity
+    guid: 7bdaec9590b0f12488b5a7e45eba0e47
+  - enabled: 1
+    path: Assets/Scenes/Ursinho.unity
+    guid: 8e861c1ea1ef3f24aa351656de76c76a
+  - enabled: 1
+    path: "Assets/Scenes/Respira\xE7\xE3o.unity"
+    guid: 8ecff693ab38a8f4ea6f99fe09888e93
+  - enabled: 1
+    path: "Assets/Scenes/TelaVit\xF3ria2.unity"
+    guid: afdd0023c1429c9458214101d73fccd5
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: ae1bcb864c8f69343b7f2a8e5bca90a1, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 04bb371d11fa6c947873e5854b907aed, type: 2}

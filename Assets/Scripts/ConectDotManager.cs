@@ -206,7 +206,8 @@ public class ConnectDotsDrawer : MonoBehaviour
         currentPoint = 1;
         currentDot = FindDotByNumber(currentPoint);
         nextDot = FindDotByNumber(currentPoint + 1);
-
+        
+    
         dotsSelecionados.Clear();
 
         Debug.Log("Dots e contadores resetados.");
